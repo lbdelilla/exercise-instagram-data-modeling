@@ -8,23 +8,87 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
+class User(Base):
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    username = Column(String(250), unique=True, nullable=False)
+    password = Column(String(8), nullable=False)
+    email = Column(String(50), nullable=False)
 
-class Address(Base):
-    __tablename__ = 'address'
-    # Here we define columns for the table address.
-    # Notice that each column is also a normal Python instance attribute.
+class Storie(Base):
+    __tablename__='storie'
     id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+    name = Column(String(50))
+    description = Column(String(100))
+    author_id = Column(Integer, ForeignKey('user.id'))
+    author = relationship(User)
+
+class Photo(Base):
+    __tablename__='photo'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    description = Column(String(100))
+    author_id = Column(Integer, ForeignKey('user.id'))
+    author = relationship(User)
+    
+class Reel(Base):
+    __tablename__='reel'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+    description = Column(String(100))
+    author_id = Column(Integer, ForeignKey('user.id'))
+    author = relationship(User)
+
+class Post(Base):
+    __tablename__= 'post'
+    id = Column(Integer, primary_key=True)
+    author_id = Column(Integer, ForeignKey('user.id'))
+    photo_id = Column(Integer, ForeignKey('photo.id'))
+    reel_id = Column(Integer, ForeignKey('reel.id'))
+    storie_id = Column(Integer, ForeignKey('storie.id'))
+    storie = relationship(Storie)
+    reel = relationship(Reel)
+    photo = relationship(Photo)
+    author = relationship(User)
+
+class Comment(Base):
+    __tablename__ = 'comment'
+    id = Column(Integer, primary_key=True)
+    comment_text = Column(String(250))
+    author_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('post.id'))
+    author = relationship(User)
+    post = relationship(Post)
+
+class Message(Base):
+    __tablename__='message'
+    id = Column(Integer, primary_key=True)
+    user_from_id = Column(Integer, ForeignKey('user.id'))
+    user_to_id = Column(Integer, ForeignKey('user.id'))
+    content_text = Column(String(500))
+    user = relationship(User)
+
+class Likes(Base):
+    __tablename__='likes'
+    id = Column(Integer, primary_key=True)
+    author_id = Column(Integer, ForeignKey('user.id'))
+    photo_id = Column(Integer, ForeignKey('photo.id'))
+    reel_id = Column(Integer, ForeignKey('reel.id'))
+    message_id = Column(Integer, ForeignKey('message.id'))
+    message = relationship(Message)
+    reel = relationship(Reel)
+    photo = relationship(Photo)
+    author = relationship(User)
+
+
+class Followers(Base):
+    __tablename__='followers'
+    id = Column(Integer, primary_key= True)
+    user_from_id = Column(Integer, ForeignKey('user.id'))
+    user_to_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
+
+
 
     def to_dict(self):
         return {}
